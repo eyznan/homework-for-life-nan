@@ -3,39 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jadwal Shift & Journal — Isnanda</title>
+  <title>Jadwal Shift & Journal</title>
   <style>
     :root {
-      --bg: #f6f7f9;
+      --bg: #f4f6f9;
       --surface: #ffffff;
       --surface-subtle: #f8fafc;
-      --text: #111827;
-      --text-muted: #6b7280;
-      --border: #e5e7eb;
-      --accent: #1d4ed8;
-      --accent-soft: #eff6ff;
-
-      /* Warna Shift & Status */
-      --s1-bg: #f0fdf4;
-      --s1-border: #bbf7d0;
-      --s1-text: #166534;
-
-      --s2-bg: #fffbeb;
-      --s2-border: #fde68a;
-      --s2-text: #92400e;
-
-      --s3-bg: #f5f3ff;
-      --s3-border: #ddd6fe;
-      --s3-text: #5b21b6;
-
-      --off-bg: #f3f4f6;
-      --off-border: #e5e7eb;
-      --off-text: #6b7280;
-
-      /* Overtime (Biru sesuai warna sel Sheets) */
-      --ot-bg: #dbeafe;
-      --ot-border: #3b82f6;
-      --ot-text: #1e40af;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #2563eb;
     }
 
     * {
@@ -55,10 +32,10 @@
     .app-shell {
       max-width: 1440px;
       margin: 0 auto;
-      padding: 16px 22px;
+      padding: 14px 22px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
 
     @media (min-width: 900px) {
@@ -71,7 +48,7 @@
       }
     }
 
-    /* Top Bar */
+    /* Top Bar: Tanggal Live & Jam di Kiri, Dropdown di Kanan */
     .topbar {
       display: flex;
       justify-content: space-between;
@@ -81,21 +58,43 @@
       flex-shrink: 0;
     }
 
-    .brand {
+    .live-clock-bar {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 12px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
     }
 
-    .brand h1 {
-      font-size: 1.15rem;
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+      flex-shrink: 0;
+    }
+
+    .live-date-text {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .live-divider {
+      color: #cbd5e1;
+      font-size: 0.85rem;
+    }
+
+    .live-time-text {
+      font-size: 0.88rem;
       font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .brand span {
-      font-size: 0.8rem;
-      color: var(--text-muted);
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
     }
 
     .controls {
@@ -111,7 +110,7 @@
       color: var(--text);
       padding: 7px 12px;
       border-radius: 10px;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       font-weight: 500;
       cursor: pointer;
       transition: border-color 0.15s, box-shadow 0.15s;
@@ -119,25 +118,25 @@
 
     select {
       padding-right: 28px;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 9px center;
     }
 
     select:hover, .btn-today:hover {
-      border-color: #cbd5e1;
+      border-color: #94a3b8;
     }
 
     select:focus, .btn-today:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
     }
 
     /* Main Workspace Grid: Kiri Info/Status, Kanan Kalender */
     .workspace {
       display: grid;
-      grid-template-columns: 340px 1fr;
+      grid-template-columns: 335px 1fr;
       gap: 16px;
       flex: 1;
       min-height: 0;
@@ -161,8 +160,8 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      padding: 15px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
     }
 
     /* Kartu Today & Tomorrow */
@@ -174,31 +173,32 @@
 
     .shift-highlight {
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 13px;
       padding: 12px;
       background: var(--surface-subtle);
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
+      transition: all 0.2s ease;
     }
 
     .shift-highlight .label {
-      font-size: 0.72rem;
-      font-weight: 600;
+      font-size: 0.7rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      opacity: 0.75;
     }
 
     .shift-highlight .value {
-      font-size: 1.1rem;
+      font-size: 1.02rem;
       font-weight: 700;
       margin-top: 2px;
     }
 
     .shift-highlight .sub {
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      font-size: 0.73rem;
+      opacity: 0.8;
     }
 
     /* Ringkasan Bulan */
@@ -213,17 +213,17 @@
       background: var(--surface-subtle);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 8px 10px;
+      padding: 8px 6px;
       text-align: center;
     }
 
     .stat-box .num {
-      font-size: 1rem;
+      font-size: 0.98rem;
       font-weight: 700;
     }
 
     .stat-box .lbl {
-      font-size: 0.7rem;
+      font-size: 0.69rem;
       color: var(--text-muted);
       margin-top: 1px;
     }
@@ -249,15 +249,16 @@
     }
 
     .detail-date {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 700;
     }
 
     .badge {
       font-size: 0.72rem;
-      font-weight: 600;
-      padding: 3px 9px;
+      font-weight: 700;
+      padding: 3px 10px;
       border-radius: 999px;
+      border: 1px solid transparent;
     }
 
     .detail-body {
@@ -294,13 +295,14 @@
     .cal-month-title {
       font-size: 1.05rem;
       font-weight: 700;
+      letter-spacing: -0.01em;
     }
 
     .legend {
       display: flex;
       align-items: center;
-      gap: 12px;
-      font-size: 0.74rem;
+      gap: 11px;
+      font-size: 0.73rem;
       color: var(--text-muted);
       flex-wrap: wrap;
     }
@@ -312,10 +314,10 @@
     }
 
     .swatch {
-      width: 10px;
-      height: 10px;
+      width: 11px;
+      height: 11px;
       border-radius: 3px;
-      border: 1px solid transparent;
+      border: 1px solid rgba(0, 0, 0, 0.12);
     }
 
     .weekdays {
@@ -323,7 +325,7 @@
       grid-template-columns: repeat(7, 1fr);
       gap: 8px;
       text-align: center;
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       font-weight: 600;
       color: var(--text-muted);
       padding-bottom: 8px;
@@ -341,21 +343,22 @@
 
     .day-cell {
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 13px;
       padding: 8px 10px;
       background: var(--surface);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       cursor: pointer;
-      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
-      min-height: 58px;
+      transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
+      min-height: 60px;
       position: relative;
+      overflow: hidden;
     }
 
     .day-cell:hover {
-      border-color: #94a3b8;
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
     }
 
     .day-cell.empty {
@@ -365,80 +368,161 @@
     }
     .day-cell.empty:hover {
       transform: none;
+      box-shadow: none;
     }
 
     .day-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      z-index: 1;
     }
 
     .day-num {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text);
+      font-size: 0.88rem;
+      font-weight: 700;
     }
 
     /* Titik indikator Homework for Life */
     .journal-dot {
-      width: 6px;
-      height: 6px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: #10b981;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
     }
 
     .shift-pill {
       align-self: flex-start;
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       font-weight: 700;
       padding: 3px 8px;
       border-radius: 7px;
       letter-spacing: 0.01em;
+      z-index: 1;
+      backdrop-filter: blur(2px);
     }
 
-    /* Styling per jenis shift */
-    .type-s1 { background: var(--s1-bg); border-color: var(--s1-border); }
-    .type-s1 .shift-pill { color: var(--s1-text); background: rgba(22, 101, 52, 0.08); }
+    /* ============================================================
+       TEMA ATMOSFER LANGIT PER SHIFT (PURE CSS - ULTRA RINGAN)
+       ============================================================ */
 
-    .type-s2 { background: var(--s2-bg); border-color: var(--s2-border); }
-    .type-s2 .shift-pill { color: var(--s2-text); background: rgba(146, 64, 14, 0.08); }
+    /* SHIFT 1: Pagi Cerah / Sunrise */
+    .type-s1 {
+      background:
+        radial-gradient(circle at 85% 95%, rgba(253, 224, 71, 0.55) 0%, rgba(254, 215, 170, 0.25) 45%, transparent 75%),
+        linear-gradient(160deg, #e0f2fe 0%, #f0f9ff 52%, #fef3c7 100%);
+      border-color: #bae6fd;
+      color: #0c4a6e;
+    }
+    .type-s1 .shift-pill {
+      background: rgba(255, 255, 255, 0.75);
+      color: #0369a1;
+      border: 1px solid rgba(186, 230, 253, 0.8);
+    }
 
-    .type-s3 { background: var(--s3-bg); border-color: var(--s3-border); }
-    .type-s3 .shift-pill { color: var(--s3-text); background: rgba(91, 33, 182, 0.08); }
+    /* SHIFT 2: Sore / Sunset Langit Menguning-Oranye */
+    .type-s2 {
+      background:
+        radial-gradient(circle at 82% 88%, rgba(251, 146, 60, 0.42) 0%, transparent 65%),
+        linear-gradient(155deg, #fef9c3 0%, #fde68a 52%, #fed7aa 100%);
+      border-color: #fcd34d;
+      color: #78350f;
+    }
+    .type-s2 .shift-pill {
+      background: rgba(255, 255, 255, 0.72);
+      color: #92400e;
+      border: 1px solid rgba(252, 211, 77, 0.8);
+    }
 
-    .type-off { background: var(--off-bg); border-color: var(--off-border); }
-    .type-off .day-num { color: var(--text-muted); }
-    .type-off .shift-pill { color: var(--off-text); background: rgba(107, 114, 128, 0.1); font-weight: 600; }
+    /* SHIFT 3: Malam / Langit Gelap Berbintang */
+    .type-s3 {
+      background:
+        radial-gradient(1.5px 1.5px at 22% 28%, rgba(255, 255, 255, 0.85) 50%, transparent 100%),
+        radial-gradient(1px 1px at 76% 24%, rgba(255, 255, 255, 0.7) 50%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 64% 48%, rgba(224, 231, 255, 0.75) 50%, transparent 100%),
+        radial-gradient(1px 1px at 35% 52%, rgba(255, 255, 255, 0.6) 50%, transparent 100%),
+        linear-gradient(160deg, #0f172a 0%, #1e1b4b 58%, #312e81 100%);
+      border-color: #3730a3;
+      color: #f8fafc;
+    }
+    .type-s3 .day-num {
+      color: #f1f5f9;
+    }
+    .type-s3 .shift-pill {
+      background: rgba(255, 255, 255, 0.14);
+      color: #e0e7ff;
+      border: 1px solid rgba(199, 210, 254, 0.25);
+    }
+    .type-s3 .journal-dot {
+      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.85);
+    }
 
-    /* Overtime (Biru) meng-override warna dasar shift */
-    .type-ot { background: var(--ot-bg) !important; border-color: var(--ot-border) !important; }
-    .type-ot .shift-pill { color: var(--ot-text) !important; background: rgba(30, 64, 175, 0.12) !important; }
+    /* OFF DAY: Tenang & Bersih */
+    .type-off {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+      color: #64748b;
+    }
+    .type-off .day-num {
+      color: #94a3b8;
+      font-weight: 600;
+    }
+    .type-off .shift-pill {
+      background: #eef2f6;
+      color: #64748b;
+      font-weight: 600;
+    }
 
+    /* OVERTIME (Warna Biru Sheets): Langit Biru Cerah Tegas */
+    .type-ot {
+      background:
+        radial-gradient(circle at 85% 20%, rgba(147, 197, 253, 0.55) 0%, transparent 60%),
+        linear-gradient(160deg, #dbeafe 0%, #bfdbfe 100%) !important;
+      border-color: #3b82f6 !important;
+      color: #1e3a8a !important;
+    }
+    .type-ot .day-num {
+      color: #1e3a8a !important;
+    }
+    .type-ot .shift-pill {
+      background: #2563eb !important;
+      color: #ffffff !important;
+      border: none !important;
+    }
+
+    /* Penanda Hari Ini & Tanggal Dipilih */
     .day-cell.today {
-      box-shadow: inset 0 0 0 2px var(--accent);
+      box-shadow: 0 0 0 2px var(--accent);
     }
 
     .day-cell.selected {
-      outline: 2px solid var(--text);
+      outline: 2.5px solid #0f172a;
       outline-offset: 1px;
     }
 
     @media (max-width: 600px) {
       .app-shell { padding: 12px; }
+      .live-clock-bar { width: 100%; justify-content: center; }
+      .controls { width: 100%; justify-content: space-between; }
+      .controls select { flex: 1; }
       .day-cell { padding: 6px; min-height: 54px; border-radius: 10px; }
-      .shift-pill { font-size: 0.68rem; padding: 2px 5px; }
+      .shift-pill { font-size: 0.67rem; padding: 2px 5px; }
       .weekdays, .days-grid { gap: 5px; }
     }
   </style>
 </head>
 <body>
   <div class="app-shell">
-    <!-- Header & Dropdown Navigasi -->
+    <!-- Top Bar: Hari & Jam Detik Berjalan + Dropdown Bulan & Tahun -->
     <header class="topbar">
-      <div class="brand">
-        <h1>Jadwal Kerja — Isnanda</h1>
-        <span id="syncStatus">Menyinkronkan data...</span>
+      <div class="live-clock-bar" title="Waktu Lokal Real-Time">
+        <span class="live-dot" id="syncDot"></span>
+        <span class="live-date-text" id="liveDateText">-</span>
+        <span class="live-divider">•</span>
+        <span class="live-time-text" id="liveTimeText">00:00:00</span>
       </div>
+
       <div class="controls">
         <select id="monthSelect" aria-label="Pilih Bulan"></select>
         <select id="yearSelect" aria-label="Pilih Tahun"></select>
@@ -471,7 +555,7 @@
               <div class="lbl">Hari Kerja</div>
             </div>
             <div class="stat-box">
-              <div class="num" id="statOT" style="color: var(--ot-text);">0</div>
+              <div class="num" id="statOT" style="color: #1d4ed8;">0</div>
               <div class="lbl">Overtime</div>
             </div>
             <div class="stat-box">
@@ -498,11 +582,11 @@
         <div class="cal-header-row">
           <div class="cal-month-title" id="calTitle">-</div>
           <div class="legend">
-            <div class="legend-item"><span class="swatch" style="background:var(--s1-bg);border-color:var(--s1-border)"></span>Shift 1</div>
-            <div class="legend-item"><span class="swatch" style="background:var(--s2-bg);border-color:var(--s2-border)"></span>Shift 2</div>
-            <div class="legend-item"><span class="swatch" style="background:var(--s3-bg);border-color:var(--s3-border)"></span>Shift 3</div>
-            <div class="legend-item"><span class="swatch" style="background:var(--ot-bg);border-color:var(--ot-border)"></span>Overtime</div>
-            <div class="legend-item"><span class="swatch" style="background:var(--off-bg);border-color:var(--off-border)"></span>Off</div>
+            <div class="legend-item"><span class="swatch" style="background:linear-gradient(135deg,#e0f2fe,#fef3c7)"></span>Pagi (S1)</div>
+            <div class="legend-item"><span class="swatch" style="background:linear-gradient(135deg,#fef9c3,#fed7aa)"></span>Sore (S2)</div>
+            <div class="legend-item"><span class="swatch" style="background:linear-gradient(135deg,#0f172a,#312e81)"></span>Malam (S3)</div>
+            <div class="legend-item"><span class="swatch" style="background:#bfdbfe;border-color:#3b82f6"></span>Overtime</div>
+            <div class="legend-item"><span class="swatch" style="background:#f8fafc"></span>Off</div>
             <div class="legend-item"><span class="journal-dot"></span>Jurnal</div>
           </div>
         </div>
@@ -526,6 +610,7 @@
     // GANTI DENGAN WEB APP URL GOOGLE APPS SCRIPT KAMU
     const API_URL = "https://script.google.com/macros/s/AKfycbwEesmuiEVuQrIBaH36231UY0XG0mOKmyUfUFIsta4Dyrzn9xz1DOPeJslLNrzGQkI7/exec";
 
+    const DAYS_ID = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
     const MONTHS = [
       "Januari", "Februari", "Maret", "April", "Mei", "Juni",
       "Juli", "Agustus", "September", "Oktober", "November", "Desember"
@@ -534,7 +619,7 @@
     let scheduleData = {}; // { "YYYY-MM-DD": { shift: "1", status: "normal" | "overtime" } }
     let journalData = {};  // { "YYYY-MM-DD": "Cerita..." }
 
-    const now = new Date();
+    let now = new Date();
     let viewYear = now.getFullYear();
     let viewMonth = now.getMonth();
     let selectedDateKey = toDateKey(now);
@@ -543,7 +628,9 @@
     const yearSelect = document.getElementById("yearSelect");
     const daysGrid = document.getElementById("daysGrid");
     const calTitle = document.getElementById("calTitle");
-    const syncStatus = document.getElementById("syncStatus");
+    const liveDateText = document.getElementById("liveDateText");
+    const liveTimeText = document.getElementById("liveTimeText");
+    const syncDot = document.getElementById("syncDot");
 
     function toDateKey(dateObj) {
       const y = dateObj.getFullYear();
@@ -557,6 +644,29 @@
       return `${parseInt(d, 10)} ${MONTHS[parseInt(m, 10) - 1]} ${y}`;
     }
 
+    // Update Jam & Tanggal Live setiap detik
+    function updateLiveClock() {
+      const current = new Date();
+      const dayName = DAYS_ID[current.getDay()];
+      const dayNum = current.getDate();
+      const monthName = MONTHS[current.getMonth()];
+      const yearNum = current.getFullYear();
+
+      const hh = String(current.getHours()).padStart(2, "0");
+      const mm = String(current.getMinutes()).padStart(2, "0");
+      const ss = String(current.getSeconds()).padStart(2, "0");
+
+      liveDateText.textContent = `${dayName}, ${dayNum} ${monthName} ${yearNum}`;
+      liveTimeText.textContent = `${hh}:${mm}:${ss}`;
+
+      // Jika melewati tengah malam (pergantian hari), perbarui penanda Hari Ini & Besok
+      if (toDateKey(current) !== toDateKey(now)) {
+        now = current;
+        updateTodayTomorrow();
+        renderCalendar();
+      }
+    }
+
     function formatShiftLabel(item) {
       if (!item) return { text: "Belum ada data", short: "-", typeClass: "" };
       const s = String(item.shift).trim();
@@ -565,7 +675,7 @@
       if (s === "0") {
         return {
           text: isOT ? "Overtime (Off)" : "Off Day",
-          short: isOT ? "OT (Off)" : "Off",
+          short: isOT ? "OT • Off" : "Off",
           typeClass: isOT ? "type-ot" : "type-off"
         };
       }
@@ -585,7 +695,6 @@
         monthSelect.appendChild(opt);
       });
 
-      // Rentang tahun otomatis (tahun lalu s.d. 3 tahun ke depan, plus tahun dari data Sheets jika ada)
       const yearSet = new Set([now.getFullYear() - 1, now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + 2]);
       Object.keys(scheduleData).forEach(k => yearSet.add(parseInt(k.slice(0, 4), 10)));
       const sortedYears = Array.from(yearSet).sort((a, b) => a - b);
@@ -631,7 +740,13 @@
       const badge = document.getElementById("detailShiftBadge");
       badge.textContent = info.text;
       badge.className = `badge ${info.typeClass}`;
-      badge.style.background = scheduleData[dateKey] ? "" : "#f3f4f6";
+      if (!scheduleData[dateKey]) {
+        badge.style.background = "#f1f5f9";
+        badge.style.color = "#64748b";
+      } else {
+        badge.style.background = "";
+        badge.style.color = "";
+      }
 
       const journalEl = document.getElementById("detailJournalText");
       if (journalData[dateKey]) {
@@ -715,8 +830,8 @@
     }
 
     async function loadData() {
+      syncDot.style.background = "#f59e0b"; // Kuning saat memuat
       try {
-        syncStatus.textContent = "Menyinkronkan...";
         const res = await fetch(API_URL);
         const json = await res.json();
 
@@ -727,13 +842,15 @@
           updateTodayTomorrow();
           renderDetail(selectedDateKey);
           renderCalendar();
-          syncStatus.textContent = "Terhubung ke Sheets";
+          syncDot.style.background = "#10b981"; // Hijau saat tersinkron
+          syncDot.title = "Tersinkronisasi dengan Google Sheets";
         } else {
-          syncStatus.textContent = "Gagal membaca data";
+          syncDot.style.background = "#ef4444";
         }
       } catch (err) {
         console.error(err);
-        syncStatus.textContent = "Gagal terhubung ke API";
+        syncDot.style.background = "#ef4444";
+        syncDot.title = "Gagal terhubung ke Google Sheets";
       }
     }
 
@@ -755,6 +872,11 @@
       renderCalendar();
     });
 
+    // Jalankan jam detik real-time
+    updateLiveClock();
+    setInterval(updateLiveClock, 1000);
+
+    // Render awal & ambil data
     initDropdowns();
     updateTodayTomorrow();
     renderDetail(selectedDateKey);
