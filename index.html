@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Homework for Life — Journal Calendar</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-soft: #dbeafe;
+      --filled-bg: #dcfce7;
+      --filled-border: #22c55e;
+      --filled-text: #166534;
+      --today-ring: #2563eb;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .title-group h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .title-group p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .stats-badge {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .calendar-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .cal-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 8px;
+    }
+
+    .cal-nav-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    button {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    button:hover {
+      background: #f1f5f9;
+    }
+
+    .weekdays, .days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .weekdays {
+      margin-bottom: 8px;
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .day-cell {
+      aspect-ratio: 1 / 1;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      font-weight: 500;
+      position: relative;
+      background: #ffffff;
+      color: var(--muted);
+      user-select: none;
+    }
+
+    .day-cell.empty {
+      border: none;
+      background: transparent;
+    }
+
+    /* Tanggal yang sudah ada catatan jurnal */
+    .day-cell.has-entry {
+      background: var(--filled-bg);
+      border-color: var(--filled-border);
+      color: var(--filled-text);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .day-cell.has-entry:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(34, 197, 94, 0.18);
+    }
+
+    .day-cell.has-entry::after {
+      content: "";
+      width: 6px;
+      height: 6px;
+      background: var(--filled-border);
+      border-radius: 50%;
+      margin-top: 4px;
+    }
+
+    /* Penanda hari ini */
+    .day-cell.today {
+      outline: 2px solid var(--today-ring);
+      outline-offset: 1px;
+    }
+
+    .day-cell.selected {
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
+    }
+
+    .legend {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .dot.filled {
+      background: var(--filled-bg);
+      border: 1px solid var(--filled-border);
+    }
+
+    .dot.empty-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+    }
+
+    /* Panel Pembaca Cerita */
+    .story-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .story-date {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .story-content {
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--text);
+      white-space: pre-line;
+    }
+
+    .story-placeholder {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .status-bar {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="title-group">
+        <h1>Homework for Life</h1>
+        <p>Arsip momen harian yang layak diceritakan</p>
+      </div>
+      <div class="stats-badge" id="statsBadge">Memuat data...</div>
+    </header>
+
+    <div class="calendar-card">
+      <div class="cal-nav">
+        <div class="cal-nav-title" id="monthYearLabel">-</div>
+        <div class="nav-buttons">
+          <button id="prevYearBtn" title="Tahun Sebelumnya">« Tahun</button>
+          <button id="prevMonthBtn" title="Bulan Sebelumnya">‹ Bulan</button>
+          <button id="todayBtn">Hari Ini</button>
+          <button id="nextMonthBtn" title="Bulan Berikutnya">Bulan ›</button>
+          <button id="nextYearBtn" title="Tahun Berikutnya">Tahun »</button>
+        </div>
+      </div>
+
+      <div class="weekdays">
+        <div>Min</div>
+        <div>Sen</div>
+        <div>Sel</div>
+        <div>Rab</div>
+        <div>Kam</div>
+        <div>Jum</div>
+        <div>Sab</div>
+      </div>
+
+      <div class="days-grid" id="daysGrid"></div>
+
+      <div class="legend">
+        <div class="legend-item"><span class="dot filled"></span> Sudah menulis (klik untuk baca)</div>
+        <div class="legend-item"><span class="dot empty-box"></span> Belum menulis</div>
+      </div>
+    </div>
+
+    <div class="story-card">
+      <div class="story-date" id="storyDate">Pilih tanggal hijau di kalender</div>
+      <div class="story-content story-placeholder" id="storyContent">
+        Klik salah satu tanggal yang bertanda hijau untuk membaca catatan momen hari itu.
+      </div>
+    </div>
+
+    <div class="status-bar" id="statusBar">Sinkronisasi dengan Google Sheets...</div>
+  </div>
+
+  <script>
+    // GANTI DENGAN WEB APP URL DARI GOOGLE APPS SCRIPT KAMU
+    const API_URL = "https://script.google.com/macros/s/AKfycbwEesmuiEVuQrIBaH36231UY0XG0mOKmyUfUFIsta4Dyrzn9xz1DOPeJslLNrzGQkI7/exec";
+
+    const MONTH_NAMES = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+
+    let entriesData = {}; // Format: { "YYYY-MM-DD": "Isi cerita..." }
+    let currentDate = new Date();
+    let viewYear = currentDate.getFullYear();
+    let viewMonth = currentDate.getMonth();
+    let selectedDateStr = null;
+
+    const monthYearLabel = document.getElementById("monthYearLabel");
+    const daysGrid = document.getElementById("daysGrid");
+    const statsBadge = document.getElementById("statsBadge");
+    const storyDate = document.getElementById("storyDate");
+    const storyContent = document.getElementById("storyContent");
+    const statusBar = document.getElementById("statusBar");
+
+    function formatDateKey(year, monthIndex, day) {
+      const m = String(monthIndex + 1).padStart(2, "0");
+      const d = String(day).padStart(2, "0");
+      return `${year}-${m}-${d}`;
+    }
+
+    function formatReadableDate(dateStr) {
+      const [y, m, d] = dateStr.split("-");
+      return `${parseInt(d, 10)} ${MONTH_NAMES[parseInt(m, 10) - 1]} ${y}`;
+    }
+
+    function renderCalendar() {
+      monthYearLabel.textContent = `${MONTH_NAMES[viewMonth]} ${viewYear}`;
+      daysGrid.innerHTML = "";
+
+      const firstDayOfMonth = new Date(viewYear, viewMonth, 1).getDay();
+      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+      const todayKey = formatDateKey(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        currentDate.getDate()
+      );
+
+      let monthFilledCount = 0;
+
+      // Kotak kosong sebelum tanggal 1
+      for (let i = 0; i < firstDayOfMonth; i++) {
+        const emptyCell = document.createElement("div");
+        emptyCell.className = "day-cell empty";
+        daysGrid.appendChild(emptyCell);
+      }
+
+      // Render tanggal 1 sampai akhir bulan
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateKey = formatDateKey(viewYear, viewMonth, day);
+        const cell = document.createElement("div");
+        cell.className = "day-cell";
+        cell.textContent = day;
+
+        if (dateKey === todayKey) {
+          cell.classList.add("today");
+        }
+
+        if (entriesData[dateKey]) {
+          monthFilledCount++;
+          cell.classList.add("has-entry");
+          if (selectedDateStr === dateKey) {
+            cell.classList.add("selected");
+          }
+          cell.addEventListener("click", () => selectEntry(dateKey));
+        }
+
+        daysGrid.appendChild(cell);
+      }
+
+      const totalAllTime = Object.keys(entriesData).length;
+      statsBadge.textContent = `Bulan ini: ${monthFilledCount}/${daysInMonth} • Total: ${totalAllTime} hari`;
+    }
+
+    function selectEntry(dateKey) {
+      selectedDateStr = dateKey;
+      storyDate.textContent = formatReadableDate(dateKey);
+      storyContent.classList.remove("story-placeholder");
+      storyContent.textContent = entriesData[dateKey];
+      renderCalendar();
+    }
+
+    async function fetchJournalData() {
+      try {
+        statusBar.textContent = "Mengambil data jurnal...";
+        const response = await fetch(API_URL);
+        const json = await response.json();
+
+        if (json.status === "ok" && json.entries) {
+          entriesData = json.entries;
+          statusBar.textContent = "Data tersinkronisasi";
+
+          // Jika hari ini sudah ada catatan, langsung tampilkan otomatis
+          const todayKey = formatDateKey(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            currentDate.getDate()
+          );
+          if (entriesData[todayKey]) {
+            selectEntry(todayKey);
+          } else {
+            renderCalendar();
+          }
+        } else {
+          statusBar.textContent = "Format data tidak sesuai.";
+        }
+      } catch (error) {
+        console.error(error);
+        statusBar.textContent = "Gagal memuat data. Pastikan URL Web App benar & akses diatur ke Anyone.";
+      }
+    }
+
+    // Event Listener Tombol Navigasi Bulan & Tahun
+    document.getElementById("prevMonthBtn").addEventListener("click", () => {
+      viewMonth--;
+      if (viewMonth < 0) {
+        viewMonth = 11;
+        viewYear--;
+      }
+      renderCalendar();
+    });
+
+    document.getElementById("nextMonthBtn").addEventListener("click", () => {
+      viewMonth++;
+      if (viewMonth > 11) {
+        viewMonth = 0;
+        viewYear++;
+      }
+      renderCalendar();
+    });
+
+    document.getElementById("prevYearBtn").addEventListener("click", () => {
+      viewYear--;
+      renderCalendar();
+    });
+
+    document.getElementById("nextYearBtn").addEventListener("click", () => {
+      viewYear++;
+      renderCalendar();
+    });
+
+    document.getElementById("todayBtn").addEventListener("click", () => {
+      viewYear = currentDate.getFullYear();
+      viewMonth = currentDate.getMonth();
+      renderCalendar();
+    });
+
+    // Inisialisasi awal
+    renderCalendar();
+    fetchJournalData();
+  </script>
+</body>
+</html>
